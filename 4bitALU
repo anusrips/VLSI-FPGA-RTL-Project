@@ -1,0 +1,24 @@
+module alu4bit(a, b, sel, out);
+
+input  [3:0] a, b;
+input  [3:0] sel;
+output reg [3:0] out;
+
+always @(*) begin
+    case(sel)
+        4'b0000: out = a + b;     // Addition
+        4'b0001: out = a - b;     // Subtraction
+        4'b0010: out = a & b;     // AND
+        4'b0011: out = a | b;     // OR
+        4'b0100: out = a ^ b;     // XOR
+        4'b0101: out = ~a;        // NOT A
+        4'b0110: out = a << 1;    // Shift Left A
+        4'b0111: out = a >> 1;    // Shift Right A
+        4'b1000: out = b + 1;     // Increment B
+        4'b1001: out = b - 1;     // Decrement B
+        4'b1010: out = a * b;     // Multiply (4-bit result)
+        default: out = 4'b0000;   // Default
+    endcase
+end
+
+endmodule
