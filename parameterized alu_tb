@@ -1,0 +1,59 @@
+module alu_tb;
+
+    parameter WIDTH = 8;
+
+    // Testbench signals
+    logic [WIDTH-1:0] a, b;
+    logic [2:0] alu_ctrl;
+    logic [WIDTH-1:0] result;
+    logic [WIDTH-1:0] expected;
+
+    // Instantiate DUT (Design Under Test)
+    alu #(.WIDTH(WIDTH)) dut (
+        .a(a),
+        .b(b),
+        .alu_ctrl(alu_ctrl),
+        .result(result)
+    );
+
+    // Task: Golden reference model
+    task calculate_expected;
+        begin
+            case (alu_ctrl)
+                3'b000: expected = a + b;
+                3'b001: expected = a - b;
+                3'b010: expected = a & b;
+                3'b011: expected = a | b;
+                3'b100: expected = a ^ b;
+                default: expected = '0;
+            endcase
+        end
+    endtask
+
+    // Test sequence
+    initial begin
+        $display("------ ALU SELF-CHECKING TEST STARTED ------");
+
+        repeat (20) begin
+            a = $random;
+            b = $random;
+            alu_ctrl = $random % 5; // Only valid operations
+
+            #5;
+            calculate_expected();
+
+            if (result !== expected) begin
+                $display(" FAIL | a=%0d b=%0d ctrl=%b result=%0d expected=%0d",
+                         a, b, alu_ctrl, result, expected);
+            end
+            else begin
+                $display(" PASS | a=%0d b=%0d ctrl=%b result=%0d",
+                         a, b, alu_ctrl, result);
+            end
+        end
+
+        $display("------ ALU TEST COMPLETED ------");
+        $finish;
+    end
+
+endmodule
